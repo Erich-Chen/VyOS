@@ -26,7 +26,7 @@ save
 set interfaces ethernet eth0 address dhcp
 set interfaces ethernet eth0 description 'OUTSIDE'
 
-set interfaces ethernet eth1 address '192.168.0.1/24'
+set interfaces ethernet eth1 address '10.1.1.1/24'
 set interfaces ethernet eth1 description 'INSIDE'
 
 commit
@@ -46,27 +46,32 @@ save
 ```
 #Configure Source NAT for our "Inside" network.
 set nat source rule 100 outbound-interface 'eth0'
-set nat source rule 100 source address '192.168.0.0/24'
+set nat source rule 100 source address '10.1.1.0/24'
 set nat source rule 100 translation address masquerade
 
 #Configure a DHCP Server:
 set service dhcp-server disabled 'false'
-set service dhcp-server shared-network-name LAN subnet 192.168.0.0/24 default-router '192.168.0.1'
-set service dhcp-server shared-network-name LAN subnet 192.168.0.0/24 dns-server '192.168.0.1'
-set service dhcp-server shared-network-name LAN subnet 192.168.0.0/24 domain-name 'internal-network'
-set service dhcp-server shared-network-name LAN subnet 192.168.0.0/24 lease '86400'
-set service dhcp-server shared-network-name LAN subnet 192.168.0.0/24 start 192.168.0.9 stop '192.168.0.254'
+set service dhcp-server shared-network-name LAN subnet 10.1.1.0/24 default-router '10.1.1.1'
+set service dhcp-server shared-network-name LAN subnet 10.1.1.0/24 dns-server '10.1.1.1'
+set service dhcp-server shared-network-name LAN subnet 10.1.1.0/24 domain-name 'internal-network'
+set service dhcp-server shared-network-name LAN subnet 10.1.1.0/24 lease '86400'
+set service dhcp-server shared-network-name LAN subnet 10.1.1.0/24 start '10.1.1.101' stop '10.1.1.199'
 
 #And a DNS forwarder:
 set service dns forwarding cache-size '0'
 set service dns forwarding listen-on 'eth1'
 set service dns forwarding name-server '8.8.8.8'
-set service dns forwarding name-server '8.8.4.4'
+set service dns forwarding name-server '114.114.114.114'
 
 #commit and save
 commit
 save
 ```
+此时如果需要宿主机和虚拟机通讯，可以设置host-only（vmnet1）网卡，使用  
+IP: 10.1.1.xx
+Mask: 255.255.255.0
+Gateway: 10.1.1.1
+DNS: 10.1.1.1 / 8.8.8.8 / 114.114.114.114 / any other
 
 ## 防火墙设置
 ```
