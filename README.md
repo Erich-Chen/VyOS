@@ -12,6 +12,9 @@ reboot
 
 ## 添加新用户
 ```
+# 自带的vyos似乎删不掉（也许可以直接修改config.boot文件）；至少把密码修改一下
+set system login user vyos authentication plaintext-password newpassword
+# 添加新用户
 set system login user jsmith full-name "Johan Smith" 
 set system login user jsmith authentication plaintext-password mypassword 
 set system login user jsmith level admin 
