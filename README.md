@@ -126,6 +126,7 @@ monitor interfaces ethernet eth0 traffic
 show configuration
 # 可以直接修改配置文件
 vi /config/config.boot
+# 然后加载新的配置文件
 conf
 load
 commit
