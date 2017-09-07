@@ -72,8 +72,62 @@ save
 * Mask: 255.255.255.0
 * Gateway: 10.1.1.1
 * DNS: 10.1.1.1 / 8.8.8.8 / 114.114.114.114 / any other
+```
+# On Host (我的系统是Windows 10)
+ping www.baidu.com -S 10.1.1.xx
+```
 
 ## 防火墙设置
 ```
+set firewall name OUTSIDE-IN default-action 'drop'
+set firewall name OUTSIDE-IN rule 10 action 'accept'
+set firewall name OUTSIDE-IN rule 10 state established 'enable'
+set firewall name OUTSIDE-IN rule 10 state related 'enable'
 
+set firewall name OUTSIDE-LOCAL default-action 'drop'
+set firewall name OUTSIDE-LOCAL rule 10 action 'accept'
+set firewall name OUTSIDE-LOCAL rule 10 state established 'enable'
+set firewall name OUTSIDE-LOCAL rule 10 state related 'enable'
+set firewall name OUTSIDE-LOCAL rule 20 action 'accept'
+set firewall name OUTSIDE-LOCAL rule 20 icmp type-name 'echo-request'
+set firewall name OUTSIDE-LOCAL rule 20 protocol 'icmp'
+set firewall name OUTSIDE-LOCAL rule 20 state new 'enable'
+set firewall name OUTSIDE-LOCAL rule 30 action 'drop'
+set firewall name OUTSIDE-LOCAL rule 30 destination port '22'
+set firewall name OUTSIDE-LOCAL rule 30 protocol 'tcp'
+set firewall name OUTSIDE-LOCAL rule 30 recent count '4'
+set firewall name OUTSIDE-LOCAL rule 30 recent time '60'
+set firewall name OUTSIDE-LOCAL rule 30 state new 'enable'
+set firewall name OUTSIDE-LOCAL rule 31 action 'accept'
+set firewall name OUTSIDE-LOCAL rule 31 destination port '22'
+set firewall name OUTSIDE-LOCAL rule 31 protocol 'tcp'
+set firewall name OUTSIDE-LOCAL rule 31 state new 'enable'
+
+set interfaces ethernet eth0 firewall in name 'OUTSIDE-IN'
+set interfaces ethernet eth0 firewall local name 'OUTSIDE-LOCAL'
+
+commit
+save
+
+```
+
+抄不下去了，VyOS算是很方便的了，User Guide也很完整。  
+https://wiki.vyos.net/wiki/User_Guide  
+
+## 其他命令
+```
+ping www.google.com
+traceroute www.google.com
+# 郑重推荐MTR
+mtr www.google.com
+
+monitor interfaces ethernet eth0 traffic
+
+show configuration
+# 可以直接修改配置文件
+vi /config/config.boot
+conf
+load
+commit
+save
 ```
